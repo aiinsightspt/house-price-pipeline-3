@@ -65,3 +65,12 @@ jobs:
           hf upload "$REPO" model.joblib
           hf upload "$REPO" metrics.json
           hf repos tag create "$REPO" "$GITHUB_REF_NAME"
+
+      - name: Update the app on Hugging Face
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          SPACE: aiinsightspt/house-price-test
+        run: |
+          echo "$GITHUB_REF_NAME" > space/model_version.txt
+          hf upload "$SPACE" space . --repo-type space
